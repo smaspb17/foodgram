@@ -130,3 +130,8 @@ dmypy.json
 
 # .idea
 .idea
+backend/recipes/migrations/__init__.py
+backend/recipes/migrations/0001_initial.py
+backend/recipes/migrations/0002_alter_ingredient_measurement_unit.py
+backend/recipes/migrations/0003_alter_ingredient_measurement_unit.py
+backend/recipes/migrations/0004_alter_ingredient_measurement_unit.py

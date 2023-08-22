@@ -12,8 +12,6 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'gbzlz$0#9-vm72i)_e@isw(ffq#@ims56&#u8c7uw7
 
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# ALLOWED_HOSTS = ["127.0.0.1"]
-
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1").split(",")
 
 # base apps
@@ -33,7 +31,9 @@ INSTALLED_APPS += [
 ]
 
 # project apps
-INSTALLED_APPS += []
+INSTALLED_APPS += [
+    'recipes',
+]
 
 # after apps
 INSTALLED_APPS += []
