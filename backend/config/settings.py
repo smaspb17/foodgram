@@ -33,6 +33,7 @@ INSTALLED_APPS += [
 # project apps
 INSTALLED_APPS += [
     'recipes',
+    'users',
 ]
 
 # after apps
