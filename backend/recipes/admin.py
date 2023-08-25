@@ -40,3 +40,9 @@ class TagAdmin(admin.ModelAdmin):
         'id', 'name', 'color', 'slug',
     )
     list_display_links = ('id', 'name',)
+
+
+# @admin.register(Favorite)
+# class FavoriteAdmin(admin.ModelAdmin):
+#     fields = ('user', 'recipe')
+#     list_display = ('id', 'user', 'recipe',)
