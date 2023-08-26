@@ -135,13 +135,13 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Foodgram',
     'DESCRIPTION': 'Foodgram',
     'VERSION': '1.0.0',
-    'SERVE_PERMISSIONS': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'SERVE_AUTHENTICATION': [
-        'rest_framework.authentication.BasicAuthentication',
+    # 'SERVE_PERMISSIONS': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ],
+    # 'SERVE_AUTHENTICATION': [
+    #     'rest_framework.authentication.BasicAuthentication',
 
-    ],
+    # ],
     'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,
         "displayOperationId": True,
