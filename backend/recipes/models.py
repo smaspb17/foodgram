@@ -52,14 +52,14 @@ class Ingredient(models.Model):
         ('упаковка', 'упаковка'),
         ('щепотка', 'щепотка'),
     ]
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=255,
+    )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
         max_length=255,
         choices=CHOICES,
-    )
-    name = models.CharField(
-        verbose_name='Название',
-        max_length=255,
     )
 
 

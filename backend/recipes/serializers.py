@@ -11,10 +11,16 @@ from rest_framework.serializers import (
 
 # from .validators import validate_user_id
 
-from .models import Tag
+from .models import Ingredient, Tag
 
 
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
+        fields = '__all__'
+
+
+class IngredientSerializer(ModelSerializer):
+    class Meta:
+        model = Ingredient
         fields = '__all__'

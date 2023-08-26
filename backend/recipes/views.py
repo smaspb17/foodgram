@@ -15,9 +15,10 @@ from rest_framework.viewsets import (
     ReadOnlyModelViewSet,
 )
 
-from .models import Tag
+from .models import Ingredient, Tag
 # from .permissions import IsAdminOrReadOnly
 from .serializers import (
+    IngredientSerializer,
     TagSerializer,
     # QuestionSerializer,
     # ResultViewSerializer,
@@ -28,13 +29,13 @@ from .serializers import (
 # from .validators import validate_user_id
 
 
-@extend_schema(tags=["Рецепты"])
+@extend_schema(tags=["Теги"])
 @extend_schema_view(
     list=extend_schema(
-        summary='Список тэгов'
+        summary='Список тегов'
     ),
     retrieve=extend_schema(
-        summary='Деталка тэга'
+        summary='Получение тега'
     ),
 )
 class TagViewSet(ReadOnlyModelViewSet):
@@ -57,3 +58,18 @@ class TagViewSet(ReadOnlyModelViewSet):
     #     if self.request.user.is_superuser:
     #         return SurveySerializerAdmin
     #     return SurveySerializerPublic
+
+
+@extend_schema(tags=["Ингредиенты"])
+@extend_schema_view(
+    list=extend_schema(
+        summary='Список ингредиентов'
+    ),
+    retrieve=extend_schema(
+        summary='Получение ингредиента'
+    ),
+)
+class IngredientViewSet(ReadOnlyModelViewSet):
+    permission_classes = (IsAdminUser,)
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
