@@ -124,7 +124,7 @@ class Recipe(models.Model):
     #     through='RecipeIngredient',
     #     verbose_name='Ингредиенты'
     # )
-    
+
     class Meta:
         ordering = ['-id']
         verbose_name = 'Рецепт'
