@@ -5,7 +5,6 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
-    IsAdminUser,
     IsAuthenticated,
 )
 from rest_framework.viewsets import (
@@ -14,7 +13,8 @@ from rest_framework.viewsets import (
 )
 
 from .helpers import add_recipes, delete_recipes
-from .filters import RecipeFilter
+from .filters import IngredientFilter, RecipeFilter
+from .permissions import IsAdminAuthorOrReadOnly
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -23,7 +23,6 @@ from recipes.models import (
     Tag,
     ShoppingCart,
 )
-# from .permissions import IsAdminOrReadOnly
 from .serializers import (
     FavoriteSerializer,
     IngredientViewSerializer,
@@ -60,9 +59,12 @@ class TagViewSet(ReadOnlyModelViewSet):
     ),
 )
 class IngredientViewSet(ReadOnlyModelViewSet):
-    permission_classes = (IsAdminUser,)
+    permission_classes = (AllowAny, )
     queryset = Ingredient.objects.all()
     serializer_class = IngredientViewSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
+    pagination_class = None
 
 
 @extend_schema(tags=["Рецепты"])
@@ -74,8 +76,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     destroy=extend_schema(summary='Удаление рецепта'),
 )
 class RecipeViewSet(ModelViewSet):
-    permission_classes = (IsAdminUser,)
     queryset = Recipe.objects.all()
+    permission_classes = (IsAdminAuthorOrReadOnly,)
     http_method_names = ('get', 'post', 'patch', 'delete')
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -85,11 +87,8 @@ class RecipeViewSet(ModelViewSet):
             return RecipeGetSerializer
         return RecipePostSerializer
 
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        permission_classes=(IsAuthenticated,)
-    )
+    @action(detail=True, methods=('post', 'delete'),
+            permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         """Удаление/добавление в список покупок."""
         recipe = get_object_or_404(Recipe, id=pk)
@@ -102,11 +101,8 @@ class RecipeViewSet(ModelViewSet):
             return delete_recipes(request, ShoppingCart,
                                   recipe, error_message)
 
-    @action(
-        detail=True,
-        methods=('post', 'delete'),
-        permission_classes=(IsAuthenticated,)
-    )
+    @action(detail=True, methods=('post', 'delete'),
+            permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk):
         """Удаление/добавление в Избранное."""
         recipe = get_object_or_404(Recipe, id=pk)
@@ -118,11 +114,8 @@ class RecipeViewSet(ModelViewSet):
             return delete_recipes(request, Favorite,
                                   recipe, error_message)
 
-    @action(
-        detail=False,
-        methods=('get',),
-        permission_classes=(IsAuthenticated,)
-    )
+    @action(detail=False, methods=('get',),
+            permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
         """Отправка файла со списком покупок."""
         ingredients = RecipeIngredient.objects.filter(
