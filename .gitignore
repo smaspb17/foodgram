@@ -137,3 +137,11 @@ backend/recipes/migrations/0003_alter_ingredient_measurement_unit.py
 backend/recipes/migrations/0004_alter_ingredient_measurement_unit.py
 backend/recipes/migrations/0005_favorite.py
 backend/recipes/migrations/0006_delete_favorite.py
+static/
+/static/
+*/static/
+media/
+/media/
+*/media/
+*/migrations/*
+!*/migrations/__init__.py
