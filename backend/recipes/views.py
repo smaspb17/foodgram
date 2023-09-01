@@ -1,5 +1,6 @@
 # from django.http import Http404
 # from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema, extend_schema_view
 # from rest_framework.mixins import (
 #     CreateModelMixin,
@@ -8,23 +9,21 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 #     RetrieveModelMixin,
 #     UpdateModelMixin,
 # )
-from rest_framework.permissions import IsAdminUser  # AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.viewsets import (
     # GenericViewSet,
-    # ModelViewSet,
+    ModelViewSet,
     ReadOnlyModelViewSet,
 )
 
-from .models import Ingredient, Tag
+from .models import Ingredient, Recipe, Tag
 # from .permissions import IsAdminOrReadOnly
 from .serializers import (
-    IngredientSerializer,
+    IngredientGetSerializer,
+    IngredientPostSerializer,
+    RecipeGetSerializer,
+    RecipePostSerializer,
     TagSerializer,
-    # QuestionSerializer,
-    # ResultViewSerializer,
-    # SurveySerializerAdmin,
-    # SurveySerializerPublic,
-    # VariantSerializer,
 )
 # from .validators import validate_user_id
 
@@ -39,25 +38,10 @@ from .serializers import (
     ),
 )
 class TagViewSet(ReadOnlyModelViewSet):
-    permission_classes = (IsAdminUser,)
-    # filter_backends = (DjangoFilterBackend,)
-    # filterset_fields = ('is_active',)
-    # http_method_names = ('get',)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-
-    # def get_queryset(self):
-    #     if self.request.user.is_superuser:
-    #         return Survey.objects.all()
-    #     return Survey.objects.filter(is_active=True)
-
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
-
-    # def get_serializer_class(self):
-    #     if self.request.user.is_superuser:
-    #         return SurveySerializerAdmin
-    #     return SurveySerializerPublic
+    permission_classes = (AllowAny, )
+    pagination_class = None
 
 
 @extend_schema(tags=["Ингредиенты"])
@@ -72,4 +56,23 @@ class TagViewSet(ReadOnlyModelViewSet):
 class IngredientViewSet(ReadOnlyModelViewSet):
     permission_classes = (IsAdminUser,)
     queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
+    serializer_class = IngredientPostSerializer
+
+
+@extend_schema(tags=["Рецепты"])
+@extend_schema_view(
+    list=extend_schema(summary='Список рецептов'),
+    retrieve=extend_schema(summary='Получение рецепта'),
+    create=extend_schema(summary='Создание рецепта'),
+    partial_update=extend_schema(summary='Обновление рецепта'),
+    destroy=extend_schema(summary='Удаление рецепта'),
+)
+class RecipeViewSet(ModelViewSet):
+    permission_classes = (IsAdminUser,)
+    queryset = Recipe.objects.all()
+    http_method_names = ('get', 'post', 'patch', 'delete')
+
+    def get_serializer_class(self):
+        if self.request.method in ('GET',):
+            return RecipeGetSerializer
+        return RecipePostSerializer

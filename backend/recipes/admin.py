@@ -1,15 +1,20 @@
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, Tag
+from .models import (
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    Tag,
+)
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     fields = (
         'name', 'image', 'text', 'cooking_time', 'is_favorited',
-        'is_in_shopping_cart', 'tags',
+        'is_in_shopping_cart', 'tags', 'author',
     )
-    # readonly_fields = ('start_date',)
+    # readonly_fields = ('author',)
     list_display = (
         'id', 'name', 'author', 'is_favorited', 'is_in_shopping_cart',
     )
@@ -41,6 +46,15 @@ class TagAdmin(admin.ModelAdmin):
     )
     list_display_links = ('id', 'name',)
 
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    fields = (
+        'recipe', 'ingredient', 'amount',
+    )
+    list_display = (
+        'recipe', 'ingredient', 'amount',
+    )
 
 # @admin.register(Favorite)
 # class FavoriteAdmin(admin.ModelAdmin):

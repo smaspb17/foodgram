@@ -18,5 +18,15 @@ class Subscribe(models.Model):
         verbose_name='Автор рецепта'
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_user_author'
+            )
+        ]
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
     def __str__(self):
         return f'Пользователь {self.user} подписан на автора {self.author}'
