@@ -1,12 +1,15 @@
 from django.db.models import Sum
+from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import HttpResponse, get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
 )
+from rest_framework.response import Response
 from rest_framework.viewsets import (
     ModelViewSet,
     ReadOnlyModelViewSet,
@@ -29,8 +32,13 @@ from .serializers import (
     RecipeGetSerializer,
     RecipePostSerializer,
     ShoppingCartSerializer,
+    SubscribeSerializer,
+    SubscribeListSerializer,
     TagSerializer,
 )
+from users.models import Subscribe
+
+User = get_user_model()
 
 
 @extend_schema(tags=["Теги"])
@@ -133,3 +141,40 @@ class RecipeViewSet(ModelViewSet):
         response['Content-Disposition'] = \
             'attachment; filename="shopping_cart.txt"'
         return response
+
+
+class SubscribeViewSet(ModelViewSet):
+    """Создание/удаление подписки на автора."""
+    queryset = Subscribe.objects.all()
+    serializer_class = SubscribeSerializer
+
+    def create(self, request, *args, **kwargs):
+        author = get_object_or_404(User, id=kwargs['user_id'])
+        serializer = self.get_serializer(
+            data={'user': request.user.id, 'author': author.id},
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user != request.user:
+            return Response(
+                {'errors': 'Вы не подписаны на этого пользователя'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SubscribeListViewSet(mixins.ListModelMixin,
+                           viewsets.GenericViewSet):
+    """Получение подписок на автора."""
+    serializer_class = SubscribeListSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(authors__user=self.request.user)

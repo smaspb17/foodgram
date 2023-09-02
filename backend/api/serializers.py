@@ -1,6 +1,7 @@
 import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from djoser.serializers import UserCreateSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.serializers import (
     CharField,
@@ -43,23 +44,23 @@ class TagSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class AuthorGetSerializer(ModelSerializer):
+class UserGetSerializer(ModelSerializer):
     """Получение автора"""
     is_subscribed = SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         current_user = self.context['request'].user
-        current_author = obj
-        if Subscribe.objects.filter(
-            user=current_user, author=current_author
-        ).exists():
-            return True
-        else:
-            return False
+        if isinstance(current_user, User):
+            current_author = obj
+            if Subscribe.objects.filter(
+                user=current_user, author=current_author
+            ).exists():
+                return True
+        return False
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
                   'is_subscribed',)
 
 
@@ -97,7 +98,7 @@ class IngredientPostSerializer(ModelSerializer):
 class RecipeGetSerializer(ModelSerializer):
     """Просмотр рецептов(а)."""
     image = Base64ImageField(required=False)
-    author = AuthorGetSerializer(read_only=True)
+    author = UserGetSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientGetSerializer(many=True, read_only=True,
                                           source='recipe_ingredients')
@@ -230,4 +231,70 @@ class ShoppingCartSerializer(ModelSerializer):
         return RecipeViewSerializer(
             instance.recipe,
             context={'request': request}
+        ).data
+
+
+class UserSignUpSerializer(UserCreateSerializer):
+    """Регистрация пользователя."""
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'password')
+
+
+class SubscribeListSerializer(UserGetSerializer):
+    """"Получение подписок пользователей."""
+    is_subscribed = SerializerMethodField()
+    recipes = SerializerMethodField()
+    recipes_count = SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+        read_only_fields = ('email', 'username', 'first_name', 'last_name',
+                            'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        print(request)
+        recipes_limit = None
+        if request:
+            recipes_limit = request.query_params.get('recipes_limit')
+        recipes = obj.recipes.all()
+        if recipes_limit:
+            recipes = obj.recipes.all()
+        return RecipeViewSerializer(recipes, many=True,
+                                    context={'request': request}).data
+
+    def get_recipes_count(self, obj):
+        print(f'кол-во: {obj.recipes.count()}')
+        return obj.recipes.count()
+
+
+class SubscribeSerializer(ModelSerializer):
+    """Подписка/отписка от пользователей."""
+    class Meta:
+        model = Subscribe
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Subscribe.objects.all(),
+                fields=('user', 'author'),
+                message='Вы уже подписаны на этого пользователя'
+            )
+        ]
+
+    def validate(self, data):
+        request = self.context.get('request')
+        if request.user == data['author']:
+            raise ValidationError(
+                'Нельзя подписываться на самого себя!'
+            )
+        return data
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        return SubscribeListSerializer(
+            instance.author, context={'request': request}
         ).data

@@ -1,7 +1,13 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from api.views import IngredientViewSet, RecipeViewSet, TagViewSet
+from api.views import (
+    IngredientViewSet,
+    RecipeViewSet,
+    SubscribeListViewSet,
+    SubscribeViewSet,
+    TagViewSet
+)
 from api.spectacular.urls import urlpatterns as doc_urls
 
 app_name = 'api'
@@ -25,4 +31,12 @@ router.register(
 
 urlpatterns = []
 urlpatterns += doc_urls
-urlpatterns += [path('', include(router.urls))]
+urlpatterns += [
+    path('users/subscriptions/', SubscribeListViewSet.as_view(
+        {'get': 'list'})),
+    path('users/<int:user_id>/subscribe/', SubscribeViewSet.as_view(
+        {'post': 'create', 'delete': 'destroy'})),
+    path('', include(router.urls)),
+    path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
+]
