@@ -5,22 +5,6 @@ from rest_framework.response import Response
 from recipes.models import Ingredient, RecipeIngredient
 
 
-def create_ingredients(self, recipe, ingredients):
-    """Функция создания ингредиентов рецепта"""
-    ingredient_arr = []
-    for ingredient in ingredients:
-        current_ingredient = get_object_or_404(
-            Ingredient, id=ingredient.get('id'))
-        amount = ingredient.get('amount')
-        ingredient_arr.append(RecipeIngredient(
-            recipe=recipe,
-            ingredient=current_ingredient,
-            amount=amount
-            )
-        )
-    RecipeIngredient.objects.bulk_create(ingredient_arr)
-
-
 def add_recipes(request, instance, serializer_name):
     """Функция добавления рецепта в избранное/список покупок."""
     serializer = serializer_name(

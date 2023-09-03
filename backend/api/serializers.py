@@ -1,6 +1,7 @@
 import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.serializers import (
@@ -13,7 +14,6 @@ from rest_framework.serializers import (
     ValidationError,
 )
 
-from api.helpers import create_ingredients
 from recipes.models import (
     Favorite,
     Ingredient,
@@ -157,13 +157,28 @@ class RecipePostSerializer(ModelSerializer):
             )
         return data
 
+    def create_ingredients(self, recipe, ingredients):
+        """Создание ингредиентов рецепта"""
+        ingredient_arr = []
+        for ingredient in ingredients:
+            current_ingredient = get_object_or_404(
+                Ingredient, id=ingredient.get('id'))
+            amount = ingredient.get('amount')
+            ingredient_arr.append(RecipeIngredient(
+                recipe=recipe,
+                ingredient=current_ingredient,
+                amount=amount
+                )
+            )
+        RecipeIngredient.objects.bulk_create(ingredient_arr)
+
     def create(self, validated_data):
         request = self.context.get('request')
         ingredients = validated_data.pop('recipe_ingredients')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.tags.set(tags)
-        create_ingredients(recipe, ingredients)
+        self.create_ingredients(recipe, ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -173,7 +188,7 @@ class RecipePostSerializer(ModelSerializer):
         RecipeIngredient.objects.filter(recipe=instance).delete()
         instance.tags.set(tags)
         super().update(instance, validated_data)
-        create_ingredients(instance, ingredients)
+        self.create_ingredients(instance, ingredients)
         instance.save()
         return instance
 

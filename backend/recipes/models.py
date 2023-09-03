@@ -119,11 +119,6 @@ class Recipe(models.Model):
         Tag,
         verbose_name='Теги',
     )
-    # ingredients = models.ManyToManyField(
-    #     Ingredient,
-    #     through='RecipeIngredient',
-    #     verbose_name='Ингредиенты'
-    # )
 
     class Meta:
         ordering = ['-id']

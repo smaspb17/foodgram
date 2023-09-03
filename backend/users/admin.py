@@ -4,6 +4,6 @@ from .models import Subscribe
 
 
 @admin.register(Subscribe)
-class RecipeAdmin(admin.ModelAdmin):
+class SubscribeAdmin(admin.ModelAdmin):
     fields = ('user', 'author',)
     list_display = ('id', 'user', 'author')

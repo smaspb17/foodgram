@@ -145,3 +145,5 @@ media/
 */media/
 */migrations/*
 !*/migrations/__init__.py
+backend/recipes/migrations/0016_recipe_ingredients.py
+backend/recipes/migrations/0017_remove_recipe_ingredients.py

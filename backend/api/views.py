@@ -105,7 +105,7 @@ class RecipeViewSet(ModelViewSet):
                                ShoppingCartSerializer)
 
         if request.method == 'DELETE':
-            error_message = 'У вас нет этого рецепта в списке покупок'
+            error_message = 'У вас нет данного рецепта в Списке покупок'
             return delete_recipes(request, ShoppingCart,
                                   recipe, error_message)
 
@@ -136,13 +136,18 @@ class RecipeViewSet(ModelViewSet):
             name = ingredient['ingredient__name']
             unit = ingredient['ingredient__measurement_unit']
             amount = ingredient['ingredient_amount']
-            shopping_list.append(f'\n{name} - {amount}, {unit}')
+            shopping_list.append(f'\n{name} - {amount} {unit}')
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = \
             'attachment; filename="shopping_cart.txt"'
         return response
 
 
+@extend_schema(tags=["Подписки"])
+@extend_schema_view(
+    create=extend_schema(summary='Создание подписки'),
+    destroy=extend_schema(summary='Удаление подписки'),
+)
 class SubscribeViewSet(ModelViewSet):
     """Создание/удаление подписки на автора."""
     queryset = Subscribe.objects.all()
@@ -171,6 +176,10 @@ class SubscribeViewSet(ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema(tags=["Подписки"])
+@extend_schema_view(
+    list=extend_schema(summary='Получение подписок'),
+)
 class SubscribeListViewSet(mixins.ListModelMixin,
                            viewsets.GenericViewSet):
     """Получение подписок на автора."""
