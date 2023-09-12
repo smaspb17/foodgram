@@ -168,7 +168,7 @@ class RecipePostSerializer(ModelSerializer):
                 recipe=recipe,
                 ingredient=current_ingredient,
                 amount=amount
-                )
+            )
             )
         RecipeIngredient.objects.bulk_create(ingredient_arr)
 
