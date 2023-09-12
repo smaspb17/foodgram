@@ -164,13 +164,12 @@ class RecipePostSerializer(ModelSerializer):
             current_ingredient = get_object_or_404(
                 Ingredient, id=ingredient.get('id'))
             amount = ingredient.get('amount')
-            ingredient_arr.append(
-                RecipeIngredient(
-                    recipe=recipe,
-                    ingredient=current_ingredient,
-                    amount=amount
-                    )
+            ingredient_arr.append(RecipeIngredient(
+                recipe=recipe,
+                ingredient=current_ingredient,
+                amount=amount
                 )
+            )
         RecipeIngredient.objects.bulk_create(ingredient_arr)
 
     def create(self, validated_data):
