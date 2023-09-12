@@ -10,9 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'gbzlz$0#9-vm72i)_e@isw(ffq#@ims56&#u8c7uw7troy_^b^')
 
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1").split(",")
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(' ')
 
 # base apps
 INSTALLED_APPS = [
@@ -27,16 +27,22 @@ INSTALLED_APPS = [
 # packages apps
 INSTALLED_APPS += [
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
+    'djoser',
 ]
 
 # project apps
 INSTALLED_APPS += [
     'recipes',
+    'users',
+    'api',
 ]
 
 # after apps
-INSTALLED_APPS += []
+INSTALLED_APPS += [
+    'drf_spectacular',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,7 +77,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_NAME', 'postgres'),
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
         'USER': os.getenv('POSTGRES_USER', 'postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
@@ -106,6 +112,81 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FileUploadParser',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'api.pagination.PageLimitPagination',
+    'PAGE_SIZE': 6,
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.UserSignUpSerializer',
+        'user': 'api.serializers.UserGetSerializer',
+        'current_user': 'api.serializers.UserGetSerializer',
+    },
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.AllowAny'],
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+    }
+}
+
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'Foodgram',
+#     'DESCRIPTION': 'Foodgram',
+#     'VERSION': '1.0.0',
+#     # 'SERVE_PERMISSIONS': [
+#     #     'rest_framework.permissions.IsAuthenticated',
+#     # ],
+#     # 'SERVE_AUTHENTICATION': [
+#     #     'rest_framework.authentication.BasicAuthentication',
+
+#     # ],
+#     'SWAGGER_UI_SETTINGS': {
+#         'deepLinking': True,
+#         "displayOperationId": True,
+#         "syntaxHighlight.active": True,
+#         "syntaxHighlight.theme": "arta",
+#         "defaultModelsExpandDepth": -1,
+#         "displayRequestDuration": True,
+#         "filter": True,
+#         "requestSnippetsEnabled": True,
+#     },
+#     'COMPONENT_SPLIT_REQUEST': True,
+#     'SORT_OPERATIONS': False,
+
+#     'ENABLE_DJANGO_DEPLOY_CHECK': False,
+#     'DISABLE_ERRORS_AND_WARNINGS': True,
+# }
+
+EMPTY_VALUE = '-пусто-'
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://*.localhost",
+#     "https://*.127.0.0.1",
+#     "https://*.food-gramm.ru"
+# ]
+
+# CSRF_COOKIE_SECURE = False

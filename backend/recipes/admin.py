@@ -1,22 +1,27 @@
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, Tag
+from .models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag,
+)
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     fields = (
         'name', 'image', 'text', 'cooking_time', 'is_favorited',
-        'is_in_shopping_cart', 'tags',
+        'is_in_shopping_cart', 'tags', 'author',
     )
-    # readonly_fields = ('start_date',)
     list_display = (
-        'id', 'name', 'author', 'is_favorited', 'is_in_shopping_cart',
+        'id', 'name', 'author',
     )
     list_display_links = ('id', 'name',)
     list_editable = ('is_favorited', 'is_in_shopping_cart',)
     list_filter = ('author', 'name', 'tags')
-    # search_fields = ('name',)
 
 
 @admin.register(Ingredient)
@@ -40,3 +45,25 @@ class TagAdmin(admin.ModelAdmin):
         'id', 'name', 'color', 'slug',
     )
     list_display_links = ('id', 'name',)
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    fields = (
+        'recipe', 'ingredient', 'amount',
+    )
+    list_display = (
+        'recipe', 'ingredient', 'amount',
+    )
+
+
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    fields = ('user', 'recipe')
+    list_display = ('id', 'user', 'recipe',)
+
+
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    fields = ('user', 'recipe')
+    list_display = ('id', 'user', 'recipe',)
