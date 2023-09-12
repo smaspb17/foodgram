@@ -16,14 +16,12 @@ class RecipeAdmin(admin.ModelAdmin):
         'name', 'image', 'text', 'cooking_time', 'is_favorited',
         'is_in_shopping_cart', 'tags', 'author',
     )
-    # readonly_fields = ('author',)
     list_display = (
-        'id', 'name', 'author', 'is_favorited', 'is_in_shopping_cart',
+        'id', 'name', 'author',
     )
     list_display_links = ('id', 'name',)
     list_editable = ('is_favorited', 'is_in_shopping_cart',)
     list_filter = ('author', 'name', 'tags')
-    # search_fields = ('name',)
 
 
 @admin.register(Ingredient)
