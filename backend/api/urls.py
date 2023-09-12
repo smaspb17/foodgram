@@ -8,7 +8,7 @@ from api.views import (
     SubscribeViewSet,
     TagViewSet
 )
-from api.spectacular.urls import urlpatterns as doc_urls
+# from api.spectacular.urls import urlpatterns as doc_urls
 
 app_name = 'api'
 router = DefaultRouter()
@@ -30,7 +30,7 @@ router.register(
 )
 
 urlpatterns = []
-urlpatterns += doc_urls
+# urlpatterns += doc_urls
 urlpatterns += [
     path('users/subscriptions/', SubscribeListViewSet.as_view(
         {'get': 'list'})),

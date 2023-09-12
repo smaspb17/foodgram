@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'gbzlz$0#9-vm72i)_e@isw(ffq#@ims56&#u8c7uw7troy_^b^')
 
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(' ')
 
@@ -115,7 +115,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -153,30 +153,40 @@ DJOSER = {
     }
 }
 
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'Foodgram',
-    'DESCRIPTION': 'Foodgram',
-    'VERSION': '1.0.0',
-    # 'SERVE_PERMISSIONS': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
-    # 'SERVE_AUTHENTICATION': [
-    #     'rest_framework.authentication.BasicAuthentication',
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'Foodgram',
+#     'DESCRIPTION': 'Foodgram',
+#     'VERSION': '1.0.0',
+#     # 'SERVE_PERMISSIONS': [
+#     #     'rest_framework.permissions.IsAuthenticated',
+#     # ],
+#     # 'SERVE_AUTHENTICATION': [
+#     #     'rest_framework.authentication.BasicAuthentication',
 
-    # ],
-    'SWAGGER_UI_SETTINGS': {
-        'deepLinking': True,
-        "displayOperationId": True,
-        "syntaxHighlight.active": True,
-        "syntaxHighlight.theme": "arta",
-        "defaultModelsExpandDepth": -1,
-        "displayRequestDuration": True,
-        "filter": True,
-        "requestSnippetsEnabled": True,
-    },
-    'COMPONENT_SPLIT_REQUEST': True,
-    'SORT_OPERATIONS': False,
+#     # ],
+#     'SWAGGER_UI_SETTINGS': {
+#         'deepLinking': True,
+#         "displayOperationId": True,
+#         "syntaxHighlight.active": True,
+#         "syntaxHighlight.theme": "arta",
+#         "defaultModelsExpandDepth": -1,
+#         "displayRequestDuration": True,
+#         "filter": True,
+#         "requestSnippetsEnabled": True,
+#     },
+#     'COMPONENT_SPLIT_REQUEST': True,
+#     'SORT_OPERATIONS': False,
 
-    'ENABLE_DJANGO_DEPLOY_CHECK': False,
-    'DISABLE_ERRORS_AND_WARNINGS': True,
-}
+#     'ENABLE_DJANGO_DEPLOY_CHECK': False,
+#     'DISABLE_ERRORS_AND_WARNINGS': True,
+# }
+
+EMPTY_VALUE = '-пусто-'
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://*.localhost",
+#     "https://*.127.0.0.1",
+#     "https://*.food-gramm.ru"
+# ]
+
+# CSRF_COOKIE_SECURE = False
