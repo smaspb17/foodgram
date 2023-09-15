@@ -148,7 +148,7 @@ class RecipePostSerializer(ModelSerializer):
         ingredients_list = []
         for ingredient in data.get('recipe_ingredients'):
             if (ingredient.get('amount') > 10000 or
-                    ingredient.get('amount') < 1):
+                ingredient.get('amount') < 1):
                 raise ValidationError(
                     'Количество ингредиента должно быть от 1 до 10000'
                 )
