@@ -35,20 +35,6 @@ class UserGetSerializer(ModelSerializer):
         )
 
 
-class UserSignUpSerializer(UserCreateSerializer):
-    """Регистрация пользователя."""
-    class Meta:
-        model = UserModel
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-        )
-
-
 class SubscribeListSerializer(UserGetSerializer):
     """"Получение подписок пользователей."""
     is_subscribed = SerializerMethodField()
