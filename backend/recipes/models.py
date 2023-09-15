@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-User = get_user_model()
+UserModel = get_user_model()
 
 
 class Tag(models.Model):
@@ -24,6 +24,12 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'color'],
+                name='unique_tagname_color'
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -73,6 +79,12 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Виды ингредиентов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='unique_ingredientname_measurement_unit'
+            )
+        ]
 
     def __str__(self):
         return self.name
@@ -92,7 +104,7 @@ class Recipe(models.Model):
         verbose_name='Описание рецепта',
         help_text='Опишите рецепт',
     )
-    cooking_time = models.SmallIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления в минутах',
         help_text='Введите количество минут',
         validators=[
@@ -102,7 +114,7 @@ class Recipe(models.Model):
         ]
     )
     author = models.ForeignKey(
-        User,
+        UserModel,
         on_delete=models.CASCADE,
         verbose_name='Автор',
         related_name='recipes'
@@ -121,7 +133,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
-        ordering = ['-id']
+        ordering = ('-id',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -165,7 +177,7 @@ class RecipeIngredient(models.Model):
 
 class Favorite(models.Model):
     user = models.ForeignKey(
-        User,
+        UserModel,
         on_delete=models.CASCADE,
         related_name='favorites',
         verbose_name='Пользователь'
@@ -178,7 +190,7 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        ordering = ['-id']
+        ordering = ('-id',)
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
@@ -191,7 +203,7 @@ class Favorite(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(
-        User,
+        UserModel,
         on_delete=models.CASCADE,
         related_name='carts',
         verbose_name='Пользователь'
@@ -204,7 +216,7 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
-        ordering = ['-id']
+        ordering = ('-id',)
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],

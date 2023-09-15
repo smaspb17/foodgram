@@ -1,1 +1,3 @@
-# praktikum_new_diplom
+Домен - food-gramm.ru
+Логин - admin
+Пароль - allpip17 

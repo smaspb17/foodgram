@@ -1,18 +1,18 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-User = get_user_model()
+UserModel = get_user_model()
 
 
 class Subscribe(models.Model):
     user = models.ForeignKey(
-        User,
+        UserModel,
         on_delete=models.CASCADE,
         related_name='followers',
         verbose_name='Подписчик',
     )
     author = models.ForeignKey(
-        User,
+        UserModel,
         on_delete=models.CASCADE,
         related_name='authors',
         verbose_name='Автор рецепта'
