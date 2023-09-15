@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.serializers import (
     ModelSerializer,
