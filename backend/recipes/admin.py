@@ -20,7 +20,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'id', 'name', 'author',
     )
     list_display_links = ('id', 'name',)
-    list_editable = ('is_favorited', 'is_in_shopping_cart',)
     list_filter = ('author', 'name', 'tags')
 
 

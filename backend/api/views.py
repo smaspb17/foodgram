@@ -15,7 +15,6 @@ from rest_framework.viewsets import (
     ReadOnlyModelViewSet,
 )
 
-from .helpers import add_recipes, delete_recipes
 from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsAdminAuthorOrReadOnly
 from recipes.models import (
@@ -32,13 +31,15 @@ from .serializers import (
     RecipeGetSerializer,
     RecipePostSerializer,
     ShoppingCartSerializer,
-    SubscribeSerializer,
-    SubscribeListSerializer,
     TagSerializer,
 )
 from users.models import Subscribe
+from users.serializers import (
+    SubscribeSerializer,
+    SubscribeListSerializer,
+)
 
-User = get_user_model()
+UserModel = get_user_model()
 
 
 @extend_schema(tags=["Теги"])
@@ -95,19 +96,38 @@ class RecipeViewSet(ModelViewSet):
             return RecipeGetSerializer
         return RecipePostSerializer
 
+    def add_recipes(self, request, instance, serializer_name):
+        """Функция добавления рецепта в избранное/список покупок."""
+        serializer = serializer_name(
+            data={'user': request.user.id, 'recipe': instance.id, },
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete_recipes(self, request, model_name, instance, error_message):
+        """Функция удаления рецепта из избранного/списка покупок."""
+        if not model_name.objects.filter(user=request.user,
+                                         recipe=instance).exists():
+            return Response({'errors': error_message},
+                            status=status.HTTP_400_BAD_REQUEST)
+        model_name.objects.filter(user=request.user, recipe=instance).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(detail=True, methods=('post', 'delete'),
             permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         """Удаление/добавление в список покупок."""
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
-            return add_recipes(request, recipe,
-                               ShoppingCartSerializer)
+            return self.add_recipes(request, recipe,
+                                    ShoppingCartSerializer)
 
         if request.method == 'DELETE':
             error_message = 'У вас нет данного рецепта в Списке покупок'
-            return delete_recipes(request, ShoppingCart,
-                                  recipe, error_message)
+            return self.delete_recipes(request, ShoppingCart,
+                                       recipe, error_message)
 
     @action(detail=True, methods=('post', 'delete'),
             permission_classes=(IsAuthenticated,))
@@ -115,12 +135,12 @@ class RecipeViewSet(ModelViewSet):
         """Удаление/добавление в Избранное."""
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
-            return add_recipes(request, recipe, FavoriteSerializer)
+            return self.add_recipes(request, recipe, FavoriteSerializer)
 
         if request.method == 'DELETE':
             error_message = 'У вас нет данного рецепта в Избранном'
-            return delete_recipes(request, Favorite,
-                                  recipe, error_message)
+            return self.delete_recipes(request, Favorite,
+                                       recipe, error_message)
 
     @action(detail=False, methods=('get',),
             permission_classes=(IsAuthenticated,))
@@ -154,7 +174,7 @@ class SubscribeViewSet(ModelViewSet):
     serializer_class = SubscribeSerializer
 
     def create(self, request, *args, **kwargs):
-        author = get_object_or_404(User, id=kwargs['user_id'])
+        author = get_object_or_404(UserModel, id=kwargs['user_id'])
         serializer = self.get_serializer(
             data={'user': request.user.id, 'author': author.id},
             context={'request': request}
@@ -166,12 +186,11 @@ class SubscribeViewSet(ModelViewSet):
                         headers=headers)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.user != request.user:
-            return Response(
-                {'errors': 'Вы не подписаны на этого пользователя'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        author = get_object_or_404(UserModel, id=kwargs['user_id'])
+        user = request.user
+        instance = Subscribe.objects.filter(
+            author=author, user=user
+        )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -186,4 +205,4 @@ class SubscribeListViewSet(mixins.ListModelMixin,
     serializer_class = SubscribeListSerializer
 
     def get_queryset(self):
-        return User.objects.filter(authors__user=self.request.user)
+        return UserModel.objects.filter(authors__user=self.request.user)

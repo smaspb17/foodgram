@@ -4,11 +4,11 @@ from django.contrib.auth import get_user_model
 
 from .models import Subscribe
 
-User = get_user_model()
-admin.site.unregister(User)
+UserModel = get_user_model()
+admin.site.unregister(UserModel)
 
 
-@admin.register(User)
+@admin.register(UserModel)
 class CustomUserAdmin(UserAdmin):
     list_display = ('id', 'email', 'username', 'first_name', 'last_name')
     search_fields = ('username', 'email', 'first_name', 'last_name')
