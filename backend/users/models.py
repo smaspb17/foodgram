@@ -1,7 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from .validators import validate_username, validate_email
+
 UserModel = get_user_model()
+UserModel._meta.get_field('username').validators.append(validate_username)
+UserModel._meta.get_field('email').validators.append(validate_email)
 
 
 class Subscribe(models.Model):

@@ -28,7 +28,7 @@ router.register(
 )
 
 urlpatterns = []
+urlpatterns += user_urls
 urlpatterns += [
     path('', include(router.urls)),
 ]
-urlpatterns += user_urls
