@@ -143,9 +143,9 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'api.serializers.UserSignUpSerializer',
-        'user': 'api.serializers.UserGetSerializer',
-        'current_user': 'api.serializers.UserGetSerializer',
+        'user_create': 'users.serializers.UserSignUpSerializer',
+        'user': 'users.serializers.UserGetSerializer',
+        'current_user': 'users.serializers.UserGetSerializer',
     },
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
@@ -154,3 +154,9 @@ DJOSER = {
 }
 
 EMPTY_VALUE = '-пусто-'
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.localhost",
+    "https://*.127.0.0.1",
+    "https://*.food-gramm.ru"
+]

@@ -85,6 +85,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     destroy=extend_schema(summary='Удаление рецепта'),
 )
 class RecipeViewSet(ModelViewSet):
+    """Работа с рецептами."""
     queryset = Recipe.objects.all()
     permission_classes = (IsAdminAuthorOrReadOnly,)
     http_method_names = ('get', 'post', 'patch', 'delete')

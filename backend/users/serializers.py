@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserCreateSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.serializers import (
     ModelSerializer,
@@ -11,16 +12,32 @@ from users.models import Subscribe
 UserModel = get_user_model()
 
 
+class UserSignUpSerializer(UserCreateSerializer):
+    """Регистрация пользователя."""
+    class Meta:
+        model = UserModel
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+        )
+
+
 class UserGetSerializer(ModelSerializer):
     """Получение автора"""
     is_subscribed = SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         current_user = self.context['request'].user
-        current_author = obj
-        return Subscribe.objects.filter(
-            user=current_user, author=current_author
-        ).exists()
+        if isinstance(current_user, UserModel):
+            current_author = obj
+            return Subscribe.objects.filter(
+                user=current_user, author=current_author
+            ).exists()
+        return False
 
     class Meta:
         model = UserModel

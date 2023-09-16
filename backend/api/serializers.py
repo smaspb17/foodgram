@@ -3,7 +3,6 @@ import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-from djoser.serializers import UserCreateSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.serializers import (
     CharField,
@@ -266,17 +265,3 @@ class ShoppingCartSerializer(ModelSerializer):
             instance.recipe,
             context={'request': request}
         ).data
-
-
-class UserSignUpSerializer(UserCreateSerializer):
-    """Регистрация пользователя."""
-    class Meta:
-        model = UserModel
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-        )
