@@ -6,7 +6,7 @@ on:
       - closed
 
 jobs:
-
+  
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -97,6 +97,7 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker image prune -f
+            rm -f .env
 
   send_message:
     runs-on: ubuntu-latest
