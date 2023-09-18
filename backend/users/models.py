@@ -4,7 +4,8 @@ from django.db import models
 from .validators import validate_username, validate_email
 
 UserModel = get_user_model()
-UserModel._meta.get_field('username').validators.append(validate_username)
+UserModel._meta.get_field('username')._unique = False
+UserModel._meta.get_field('username').validators = [validate_username]
 UserModel._meta.get_field('email').validators.append(validate_email)
 
 
