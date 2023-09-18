@@ -30,15 +30,3 @@ def validate_email(value):
             'пользователь с таким email уже существует'
         )
     return value
-
-
-# from django.contrib.auth.validators import UnicodeUsernameValidator
-# class CustomUsernameValidator(UnicodeUsernameValidator):
-#     def __call__(self, value):
-#         existing_user = UserModel.objects.filter(username__iexact=value).exists()
-#         if existing_user:
-#             raise ValidationError('Пользователь ЧАЙКА с таким именем уже ГАГАГА!')
-#         if value.lower() == 'me':
-#             raise ValidationError('Недопустимое имя пользователя!')
-#         if not bool(re.match(r'^[\w.@+-]+$', value)):
-#             raise ValidationError('Некорректные символы в username')
