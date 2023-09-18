@@ -10,7 +10,7 @@ def validate_username(value):
     existing_user = UserModel.objects.filter(username__iexact=value).exists()
     if existing_user:
         raise ValidationError(
-            'Пользователь с таким именем уже существует!'
+            'пользователь с таким именем уже существует'
         )
     if value.lower() == 'me':
         raise ValidationError(
@@ -27,6 +27,18 @@ def validate_email(value):
     existing_email = UserModel.objects.filter(email__iexact=value).exists()
     if existing_email:
         raise ValidationError(
-            'Пользователь с таким email уже существует!'
+            'пользователь с таким email уже существует'
         )
     return value
+
+
+# from django.contrib.auth.validators import UnicodeUsernameValidator
+# class CustomUsernameValidator(UnicodeUsernameValidator):
+#     def __call__(self, value):
+#         existing_user = UserModel.objects.filter(username__iexact=value).exists()
+#         if existing_user:
+#             raise ValidationError('Пользователь ЧАЙКА с таким именем уже ГАГАГА!')
+#         if value.lower() == 'me':
+#             raise ValidationError('Недопустимое имя пользователя!')
+#         if not bool(re.match(r'^[\w.@+-]+$', value)):
+#             raise ValidationError('Некорректные символы в username')
