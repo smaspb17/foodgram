@@ -19,7 +19,7 @@ Foodgram - это учебный веб-сайт для оттачивания �
 База данных - PostgreSQL.
 
 ## СТЕК ТЕХНОЛОГИЙ БЭКЭНДА:
-Python 3.9.10, Django Rest Framework 3.14.0, PostgreSQL, djoser, Pillow, docker-compose, CI/CD
+Python 3.9.10, Django Rest Framework 3.14.0, PostgreSQL, djoser, JWT, Pillow, JSON, Telegram, YAML, docker-compose, Gunicorn, Nginx, CI/CD, Postman
 
 ## УСТАНОВКА ПРОЕКТА на боевой сервер
 
